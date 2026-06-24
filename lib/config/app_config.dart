@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 /// All settings are documented inline for easy customization.
 class AppConfig {
   // ==================== APP IDENTITY ====================
-  static const String appName = 'Switcheats';
+  static const String appName = 'Speedoo';
   static const String appLogoPath = 'assets/images/logo.png';
 
   // ==================== COLORS & THEME ====================
@@ -32,8 +32,9 @@ class AppConfig {
   static const Color exitDialogBackgroundDark = Color(0xFF1E1E1E); // Dark Gray
   static const Color exitDialogTitleColorDark = Color(0xFFFFFFFF); // White
   static const Color exitDialogTextColorDark = Color(0xFFB3B3B3); // Light Gray
-  static const Color exitDialogCancelColorDark =
-      Color(0xFFB3B3B3); // Light Gray
+  static const Color exitDialogCancelColorDark = Color(
+    0xFFB3B3B3,
+  ); // Light Gray
 
   // Exit Dialog - Common
   static const Color exitDialogButtonColor = primaryColor; // Exit button color
@@ -56,7 +57,7 @@ class AppConfig {
 
   // ==================== WEB URL CONFIGURATION ====================
   // ⚠️ CHANGE THIS URL TO YOUR WEB APPLICATION ⚠️
-  static const String webUrl = 'https://switcheats.com/food/user';
+  static const String webUrl = 'https://app.umeedretailers.com/';
 
   static const String notificationIcon =
       '@mipmap/ic_launcher'; // Default app launcher icon
@@ -78,11 +79,10 @@ class AppConfig {
   // ==================== API CONFIGURATION ====================
   // Base URL for API endpoints (update this with your actual API base URL)
   // static const String apiBaseUrl = 'https://www.majdoorsathi.com/api/';
-  static const String apiBaseUrl = 'https://switcheats.com/api';
+  static const String apiBaseUrl = 'https://app.umeedretailers.com/api';
   // https://api.majdoorsathi.com/api/auth/verify-otp
   static const String fcmTokenUrl =
-     
-      'https://switcheats.com/api/v1/fcm-tokens/mobile/save';
+      'https://app.umeedretailers.com/api/v1/fcm-tokens/save';
 
   // ==================== SPLASH SCREEN ====================
   static const int splashDurationSeconds = 2;

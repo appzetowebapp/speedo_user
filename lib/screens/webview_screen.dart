@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -61,9 +62,9 @@ class _WebViewScreenState extends State<WebViewScreen> {
       },
     );
 
-    _checkConnectivity();
+    // _checkConnectivity();
     _initializeNotifications();
-    _listenToConnectivityChanges();
+    // _listenToConnectivityChanges();
   }
 
   @override
@@ -588,7 +589,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
                           urlString.includes('/auth/customer/verify-sms-otp') ||
                           urlString.includes('login') ||
                           urlString.includes('signin') ||
-                          urlString.includes('/auth/user/verify-otp');
+                          urlString.includes('/v1/auth/customer/verify-sms-otp');
             
             // Call original fetch
             try {
@@ -638,7 +639,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
                         url.includes('/auth/customer/verify-sms-otp') ||
                         url.includes('login') ||
                         url.includes('signin') ||
-                        url.includes('/auth/user/verify-otp'));
+                        url.includes('/v1/auth/customer/verify-sms-otp'));
 
             if (isLogin) {
                console.log('[API Interceptor] Potential XHR login request detected: ' + url);
@@ -735,14 +736,14 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
               final body = data['body'];
               if (body != null && body is Map) {
-                String? accessToken = body['accessToken']?.toString();
+                String? accessToken = body['token']?.toString();
                 if (accessToken == null && body['token'] != null) {
                   accessToken = body['token'].toString();
                 }
                 
                 // Fallback for nested data structure
                 if (accessToken == null && body['data'] != null && body['data'] is Map) {
-                  accessToken = body['data']['accessToken']?.toString() ?? 
+                  accessToken = body['data']['token']?.toString() ?? 
                                body['data']['token']?.toString();
                 }
 
@@ -1255,6 +1256,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
       onWillPop: _onWillPop,
       child: Scaffold(
         body: SafeArea(
+           top: false,
+           bottom: false,
           child: _isOnline
               ? Stack(
                   children: [
@@ -1286,6 +1289,15 @@ class _WebViewScreenState extends State<WebViewScreen> {
                         useOnLoadResource: true,
                         useShouldOverrideUrlLoading: true,
                       ),
+                      // Offline
+                      onReceivedError: (controller, request, error){
+                        debugPrint(request.toString());
+                        if(request.isForMainFrame == true || request.url.toString().endsWith('.js')){
+                          setState(() {
+                          _isOnline = false;
+                        });
+                        }
+                      },
                       onCreateWindow: (controller, createWindowRequest) async {
                         final urlRequest = createWindowRequest.request;
                         var url = urlRequest.url;
@@ -1485,6 +1497,38 @@ class _WebViewScreenState extends State<WebViewScreen> {
                             return {'success': false};
                           },
                         );
+                         controller.addJavaScriptHandler(
+                          handlerName: 'openGallery',
+                          callback: (args) async {
+                            debugPrint('📷 openGallery called');
+
+                            final ImagePicker picker = ImagePicker();
+
+                            try {
+                              final XFile? image = await picker.pickImage(
+                                source: ImageSource.gallery,
+                                imageQuality: 80,
+                              );
+
+                              if (image != null) {
+                                final bytes = await image.readAsBytes();
+                                final base64String = base64Encode(bytes);
+
+                                return {
+                                  'success': true,
+                                  'base64': base64String,
+                                  'mimeType': 'image/jpeg',
+                                  'fileName': image.name,
+                                };
+                              }
+                            } catch (e) {
+                              debugPrint('❌ Error in openGallery handler: $e');
+                            }
+
+                            return {'success': false};
+                          },
+                        );
+
 
                         // Add JavaScript handler to receive phone number from website
                         controller.addJavaScriptHandler(

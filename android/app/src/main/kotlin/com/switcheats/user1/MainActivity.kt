@@ -1,4 +1,4 @@
-package com.Speedoo.user
+package com.speedoo.app
 
 import android.Manifest
 import android.content.pm.PackageManager
